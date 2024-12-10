@@ -83427,13 +83427,15 @@ MonoBehaviour:
   speed: 5
   jumpForce: 10
   gravityMultiplier: 2
-  lookSensitivity: 100
+  lookSensitivity: 1
   cameraTransform: {fileID: 125502002}
   groundCheck: {fileID: 56688855}
   groundDistance: 0.2
   groundMask:
     serializedVersion: 2
     m_Bits: 8
+  sprintSpeed: 0
+  sprintSpeedMultiplier: 2
 --- !u!114 &2096084452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83447,7 +83449,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: cda4b769fe833f74fba376c7aa135b7e, type: 3}
-  m_NotificationBehavior: 2
+  m_NotificationBehavior: 3
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -83505,8 +83507,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_ActionId: 446d336f-e2fa-40f6-b9d8-d2ede906e133
-    m_ActionName: 'Player/Looks[/Mouse/delta]'
+    m_ActionId: 940ed92e-c8e4-4c4c-886b-069b253ca20b
+    m_ActionName: 'Player/Look[/Mouse/position]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard & Mouse
   m_DefaultActionMap: Player

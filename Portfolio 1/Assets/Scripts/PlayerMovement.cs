@@ -1,34 +1,62 @@
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement Settings")]
     public float speed = 5f; // Karakterin hareket hızı
     public float jumpForce = 5f; // Zıplama gücü
     public float gravityMultiplier = 2f; // Yerçekimi çarpanı
-
-    [Header("Mouse Settings")]
     public float lookSensitivity = 100f; // Fare duyarlılığı
     public Transform cameraTransform; // Karakter kamerası
-
-    [Header("Ground Check")]
     public Transform groundCheck; // Yere temas kontrol noktası
     public float groundDistance = 0.2f; // Yere temas yarıçapı
     public LayerMask groundMask; // Yerin katmanı
+    public float sprintSpeed;
+    public float sprintSpeedMultiplier = 2;
 
     private Rigidbody rb; // Rigidbody referansı
     private Vector2 moveInput; // WASD hareket girdisi
     private Vector2 lookInput; // Fare hareket girdisi
-    private float xRotation = 0f; // Kamera dikey rotasyonu
     private bool isGrounded; // Yerde olup olmadığımızın kontrolü
+    private PlayerInputs playerInput;
+    private float verticalRotation;
+    private float upDownRange = 80f;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        playerInput = new PlayerInputs();
+    }
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true; // Rigidbody'nin fiziksel dönmesini engeller
         Cursor.lockState = CursorLockMode.Locked; // Fareyi ekran ortasında kilitler
         Cursor.visible = false; // Farenin görünürlüğünü kapatır
+        sprintSpeed = sprintSpeedMultiplier * speed;
+    }
+
+    private void OnEnable()
+    {
+        InputSubscriptions();
+
+    }
+    private void InputSubscriptions()
+    {
+        playerInput.Enable();
+
+        playerInput.Player.Move.performed += OnMove;
+        playerInput.Player.Move.canceled += OnMove;
+
+        playerInput.Player.Jump.performed += OnJump;
+        playerInput.Player.Jump.canceled += OnJump;
+
+        playerInput.Player.Look.performed += OnLook;
+        playerInput.Player.Look.canceled += OnLook;
+
+        playerInput.Player.Sprint.performed += OnSprint;
+        playerInput.Player.Sprint.canceled += OnSprint;
     }
 
     void Update()
@@ -48,28 +76,19 @@ public class PlayerMovement : MonoBehaviour
 
     void LookAround()
     {
-        lookInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        // Fare hareketini duyarlılık ve delta zamanı ile ölçeklendir
-        float mouseX = lookInput.x * lookSensitivity * Time.deltaTime;
-        float mouseY = lookInput.y * lookSensitivity * Time.deltaTime;
+        float mouseXRotation = lookInput.x * lookSensitivity;
 
-        // Kameranın dikey eksendeki dönüşünü sınırla
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        transform.Rotate(0, mouseXRotation, 0);
 
-        // Kamerayı dikey olarak döndür
-        cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-
-        // Karakteri yatay olarak döndür
-        transform.Rotate(Vector3.up * mouseX);
+        verticalRotation -= lookInput.y * lookSensitivity;
+        verticalRotation = Mathf.Clamp(verticalRotation, -upDownRange, upDownRange);
+        Camera.main.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
     }
 
     void Move()
     {
         // Hareket yönünü hesapla
-        Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
-
-        // Yatay hareket ve zıplama kuvveti
+        Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;      // Yatay hareket ve zıplama kuvveti
         Vector3 velocity = moveDirection * speed;
         velocity.y = rb.linearVelocity.y; // Mevcut dikey hız korunur
         rb.linearVelocity = velocity;
@@ -85,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
     {
         moveInput = context.ReadValue<Vector2>();
     }
-    // TODO: Look functionality will be make thru the new input system
+
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed && isGrounded)
@@ -93,4 +112,24 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
+
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            bool isSprinting = context.ReadValue<float>() > 0 ? true : false;
+            speed = isSprinting ? sprintSpeed : speed;
+        }
+        if (context.canceled)
+        {
+            speed /= sprintSpeedMultiplier;
+        }
+
+    }
+
 }

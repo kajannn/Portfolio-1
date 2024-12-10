@@ -24,10 +24,19 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Looks",
-                    "type": "PassThrough",
-                    "id": "446d336f-e2fa-40f6-b9d8-d2ede906e133",
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "940ed92e-c8e4-4c4c-886b-069b253ca20b",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "e8f53d3b-4837-4352-9a2f-e2b9f3adc28f",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -102,12 +111,23 @@
                 },
                 {
                     "name": "",
-                    "id": "c869e984-045d-4c2b-bfa1-24e6dbbe8385",
+                    "id": "7423ee13-c55d-4e14-b212-dc26e6ab1663",
                     "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=0.2,y=0.2)",
                     "groups": ";Keyboard & Mouse",
-                    "action": "Looks",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1d2d996f-4227-47e7-bfcb-ff90a070bbf1",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
